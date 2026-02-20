@@ -26,19 +26,31 @@ def submit_download(request):
     Body: { "urls": ["https://instagram.com/reel/..."] }
     Returns a list of created DownloadTask objects.
     """
-    serializer = DownloadRequestSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
+    try:
+        serializer = DownloadRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    tasks = []
-    for url in serializer.validated_data["urls"]:
-        task = DownloadTask.objects.create(url=url)
-        start_download(str(task.id))
-        tasks.append(task)
+        tasks = []
+        for url in serializer.validated_data["urls"]:
+            task = DownloadTask.objects.create(url=url)
+            start_download(str(task.id))
+            tasks.append(task)
 
-    return Response(
-        DownloadTaskSerializer(tasks, many=True).data,
-        status=status.HTTP_201_CREATED,
-    )
+        return Response(
+            DownloadTaskSerializer(tasks, many=True).data,
+            status=status.HTTP_201_CREATED,
+        )
+    except Exception as e:
+        import traceback
+        # Return the exact error so we can debug Railway 500s easily
+        return Response(
+            {
+                "detail": "Internal Server Error",
+                "error": str(e),
+                "trace": traceback.format_exc()
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
 
 @api_view(["GET"])
