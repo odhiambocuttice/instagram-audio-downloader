@@ -14,7 +14,9 @@ from .serializers import DownloadRequestSerializer, DownloadTaskSerializer
 from .tasks import start_download
 
 
-FFMPEG_BIN = os.path.join(settings.BASE_DIR, "bin", "ffmpeg")
+# Use local bin/ffmpeg for dev, system ffmpeg for production
+_local_ffmpeg = os.path.join(settings.BASE_DIR, "bin", "ffmpeg")
+FFMPEG_BIN = _local_ffmpeg if os.path.isfile(_local_ffmpeg) else "ffmpeg"
 
 
 @api_view(["POST"])

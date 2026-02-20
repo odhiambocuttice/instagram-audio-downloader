@@ -34,13 +34,12 @@ def _run_download(task_id: str):
             task.status = DownloadTask.Status.PROCESSING
             task.save(update_fields=["progress", "status"])
 
-    # Path to our bundled ffmpeg/ffprobe binaries
+    # Use local bin/ for dev, system ffmpeg for production (Railway nixpacks)
     ffmpeg_dir = os.path.join(settings.BASE_DIR, "bin")
 
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": os.path.join(output_dir, "%(id)s.%(ext)s"),
-        "ffmpeg_location": ffmpeg_dir,
         "postprocessors": [
             {
                 "key": "FFmpegExtractAudio",
@@ -52,6 +51,10 @@ def _run_download(task_id: str):
         "no_warnings": True,
         "progress_hooks": [progress_hook],
     }
+
+    # Only set ffmpeg_location if local binaries exist
+    if os.path.isdir(ffmpeg_dir) and os.path.isfile(os.path.join(ffmpeg_dir, "ffmpeg")):
+        ydl_opts["ffmpeg_location"] = ffmpeg_dir
 
     try:
         import yt_dlp
