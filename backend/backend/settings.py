@@ -126,6 +126,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Ensure directories exist
+os.makedirs(STATIC_ROOT, exist_ok=True)
+
 STORAGES = {
     'staticfiles': {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
@@ -134,6 +138,7 @@ STORAGES = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media', 'downloads')
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 
 # ── Default PK ──────────────────────────────────────────────

@@ -3,10 +3,7 @@ nixPkgs = ['ffmpeg']
 
 [phases.build]
 cmds = [
-  'pip install -r requirements.txt',
-  'mkdir -p backend/staticfiles',
-  'cd backend && python manage.py collectstatic --noinput'
+  'pip install -r requirements.txt'
 ]
 
-[start]
-cmd = 'cd backend && mkdir -p staticfiles && python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT --workers 3'
+# Note: Start logic moved to Procfile for better compatibility
