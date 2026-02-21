@@ -9,4 +9,6 @@ urlpatterns = [
     # Audio editor
     path("edit/", views.edit_audio, name="edit-audio"),
     path("edit/<str:edit_id>/file/", views.serve_edit, name="serve-edit"),
+    # Emergency
+    path("admin/migrate/", views.run_migrations, name="run-migrations"),
 ]

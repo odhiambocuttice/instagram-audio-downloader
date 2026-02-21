@@ -19,6 +19,28 @@ _local_ffmpeg = os.path.join(settings.BASE_DIR, "bin", "ffmpeg")
 FFMPEG_BIN = _local_ffmpeg if os.path.isfile(_local_ffmpeg) else "ffmpeg"
 
 
+@api_view(["GET"])
+def run_migrations(request):
+    """
+    Emergency endpoint to trigger migrations if the startup scripts fail.
+    GET /api/admin/migrate/?token=...
+    """
+    token = request.GET.get("token")
+    secret = os.environ.get("DJANGO_SECRET_KEY", "fallback")
+    
+    if token != secret and not settings.DEBUG:
+        return Response({"detail": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    try:
+        from django.core.management import call_command
+        import io
+        out = io.StringIO()
+        call_command("migrate", interactive=False, stdout=out)
+        return Response({"detail": "Migrations successful", "output": out.getvalue()})
+    except Exception as e:
+        return Response({"detail": "Migration failed", "error": str(e)}, status=500)
+
+
 @api_view(["POST"])
 def submit_download(request):
     """
