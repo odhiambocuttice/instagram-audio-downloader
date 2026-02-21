@@ -9,5 +9,4 @@ cmds = [
 ]
 
 [start]
-# We use bash to run multiple commands: migrate then start gunicorn
-cmd = 'cd backend && python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT --workers 3'
+cmd = 'cd backend && mkdir -p staticfiles && python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT --workers 3'
