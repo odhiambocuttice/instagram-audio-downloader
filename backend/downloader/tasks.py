@@ -52,9 +52,17 @@ def _run_download(task_id: str):
         "progress_hooks": [progress_hook],
     }
 
-    # Only set ffmpeg_location if local binaries exist
-    if os.path.isdir(ffmpeg_dir) and os.path.isfile(os.path.join(ffmpeg_dir, "ffmpeg")):
+    # First check local bin/
+    local_ffmpeg = os.path.join(ffmpeg_dir, "ffmpeg")
+    if os.path.isfile(local_ffmpeg):
         ydl_opts["ffmpeg_location"] = ffmpeg_dir
+    else:
+        # Fallback to system path discovery
+        import shutil
+        sys_ffmpeg = shutil.which("ffmpeg")
+        if sys_ffmpeg:
+            # yt-dlp expects the directory or full path
+            ydl_opts["ffmpeg_location"] = os.path.dirname(sys_ffmpeg)
 
     try:
         import yt_dlp

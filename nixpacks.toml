@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['ffmpeg']
+nixPkgs = ['ffmpeg_7-full']
 
 [phases.build]
 cmds = [
